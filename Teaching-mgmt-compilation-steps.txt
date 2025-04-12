@@ -1,0 +1,17 @@
+set ORACLE_HOME=C:\App\db_home
+set PATH=%ORACLE_HOME%\bin;%PATH%
+set INCLUDE=%ORACLE_HOME%\precomp\public;%INCLUDE%
+set LIB=%ORACLE_HOME%\precomp\lib\msvc;%LIB%
+
+
+--------------------------------------------------
+
+gcc -c student.c      -o student.o
+g++ -c main.cpp       -o main.o
+gcc -c db_interface.c -o db_interface.o -I%ORACLE_HOME%/precomp/public
+
+g++ -o teaching_mgmt main.o student.o db_interface.o -L%ORACLE_HOME%/lib -lclntsh
+
+
+
+====================================================================================

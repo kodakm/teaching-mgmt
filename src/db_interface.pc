@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <string.h>
+
+EXEC SQL INCLUDE sqlca;
+
+EXEC SQL BEGIN DECLARE SECTION;
+VARCHAR conn_string[100];
+VARCHAR v_name[100], v_email[100], v_phone[15], v_course[50];
+int student_id;
+EXEC SQL END DECLARE SECTION;
+
+void registerStudent(const char *name, const char *email, const char *phone, const char *course) {
+    strcpy((char *)conn_string.arr, "system/Unix_11!");
+    conn_string.len = strlen((char *)conn_string.arr);
+
+    EXEC SQL CONNECT :conn_string;
+
+    if (sqlca.sqlcode != 0) {
+        printf("Connection failed. Error: %ld\n", sqlca.sqlcode);
+        return;
+    }
+
+    strncpy((char *)v_name.arr, name, sizeof(v_name.arr));
+    v_name.len = strlen(name);
+
+    strncpy((char *)v_email.arr, email, sizeof(v_email.arr));
+    v_email.len = strlen(email);
+
+    strncpy((char *)v_phone.arr, phone, sizeof(v_phone.arr));
+    v_phone.len = strlen(phone);
+
+    strncpy((char *)v_course.arr, course, sizeof(v_course.arr));
+    v_course.len = strlen(course);
+
+    EXEC SQL SELECT student_seq.NEXTVAL INTO :student_id FROM dual;
+
+    EXEC SQL INSERT INTO students (student_id, name, email, phone, course, join_date)
+        VALUES (:student_id, :v_name, :v_email, :v_phone, :v_course, SYSDATE);
+
+    if (sqlca.sqlcode == 0) {
+        printf("Student registered successfully. ID: %d\n", student_id);
+        EXEC SQL COMMIT;
+    } else {
+        printf("Failed to register student. Error: %ld\n", sqlca.sqlcode);
+        EXEC SQL ROLLBACK;
+    }
+
+    EXEC SQL COMMIT WORK RELEASE;
+}
